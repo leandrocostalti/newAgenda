@@ -25,42 +25,105 @@
               </div>
               <!-- /.card-header -->
               <!-- form start -->
-              <form role="form">
+              <form role="form" action="" method="post" enctype="multipart/form-data">
                 <div class="card-body">
                   <div class="form-group">
                     <label for="exampleInputEmail1">Nome</label>
-                    <input type="text" class="form-control" id="exampleInputEmail1" placeholder="Digite o nome de contato">
+                    <input type="text" class="form-control" name="nome" id="nome" required placeholder="Digite o nome de contato">
+                    
                   </div>
                   <div class="form-group">
                     <label for="exampleInputPassword1">Telefone</label>
-                    <input type="text" class="form-control" id="exampleInputPassword1" placeholder="(00) 00000-0000">
+                    <input type="text" class="form-control" name="telefone" id="telefone" required placeholder="(00) 00000-0000">
                   </div>
                   <div class="form-group">
                     <label for="exampleInputEmail1">Endereço de E-mail</label>
-                    <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Digite um e-mail">
+                    <input type="email" class="form-control" name="email" id="email" required placeholder="Digite um e-mail">
                   </div>
                   
                   <div class="form-group">
                     <label for="exampleInputFile">Foto do contato</label>
                     <div class="input-group">
                       <div class="custom-file">
-                        <input type="file" class="custom-file-input" id="exampleInputFile">
+                        <input type="file" class="custom-file-input" name="foto" id="foto" required>
                         <label class="custom-file-label" for="exampleInputFile">Arquivo de imagem</label>
                       </div>
                       
                     </div>
                   </div>
                   <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                    <input type="checkbox" class="form-check-input" id="exampleCheck1" required>
                     <label class="form-check-label" for="exampleCheck1">Autorizo o cadastro do meu contato</label>
                   </div>
                 </div>
                 <!-- /.card-body -->
 
                 <div class="card-footer">
-                  <button type="submit" class="btn btn-primary">Cadastrar Contato</button>
+                  <button type="submit" name="botao" class="btn btn-primary">Cadastrar Contato</button>
                 </div>
               </form>
+              <?php
+                include('../config/conexao.php');
+                if(isset($_POST['botao'])) {
+                  $nome = $_POST['nome'];
+                  $telefone = $_POST['telefone'];
+                  $email = $_POST['email'];
+                  $formatP = array("png","jpg","jpeg","JPG","gif");
+                  $extensao = pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION);
+
+                  if(in_array($extensao, $formatP)){
+                    $pasta = "../img/";
+                    $temporario = $_FILES['foto']['tmp_name'];
+                    $novoNome = uniqid().".$extensao";
+
+                    if(move_uploaded_file($temporario, $pasta.$novoNome)){
+                        $cadastro = "INSERT INTO tb_contatos (nome_contatos,fone_contatos,email_contatos,foto_contatos) VALUES (:nome,:telefone,:email,:foto)";
+
+                        try{
+                          $result = $conect->prepare($cadastro);
+                          $result->bindParam(':nome',$nome,PDO::PARAM_STR);
+                          $result->bindParam(':telefone',$telefone,PDO::PARAM_STR);
+                          $result->bindParam(':email',$email,PDO::PARAM_STR);
+                          $result->bindParam(':foto',$novoNome,PDO::PARAM_STR);
+                          $result->execute();
+                          $contar = $result->rowCount();
+                          if($contar > 0){
+                            echo '<div class="container">
+                                    <div class="alert alert-success alert-dismissible">
+                                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                    <h5><i class="icon fas fa-check"></i> OK!</h5>
+                                    Dados inseridos com sucesso !!!
+                                  </div>
+                                </div>';
+
+                          }else{
+                            echo '<div class="container">
+                                      <div class="alert alert-danger alert-dismissible">
+                                      <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                      <h5><i class="icon fas fa-check"></i> Erro!</h5>
+                                      Dados não inseridos !!!
+                                    </div>
+                                  </div>';
+                          }
+                        }catch (PDOException $e){
+                          echo "<strong>ERRO DE PDO= </strong>".$e->getMessage();
+                        }
+                    }else{
+                      echo "Erro, não foi possível fazer o upload do arquivo!";
+                    }
+
+                  }else{
+                    echo "Formato Inválido";
+                  }
+
+
+                  /*echo $nome."<br>";
+                  echo $telefone."<br>";
+                  echo $email."<br>";
+                  var_dump($_FILES['foto']);*/
+
+                }
+              ?>
             </div>
 </div>
             
@@ -82,14 +145,27 @@
                     </tr>
                   </thead>
                   <tbody>
+                    <?php
+                      $select = "SELECT * FROM tb_contatos ORDER BY id_contatos DESC LIMIT 6";
+                      try{
+                        $result = $conect->prepare($select);
+                        $cont = 1;
+                        $result->execute();
+
+                        $contar = $result->rowCount();
+                        if($contar > 0){
+                          while($show = $result->FETCH(PDO::FETCH_OBJ)){
+
+                    ?>
+                                      
                     <tr>
-                      <td>1.</td>
-                      <td>Leandro Costa</td>
+                      <td><?php echo $cont++;?></td>
+                      <td><?php echo $show->nome_contatos;?></td>
                       <td>
-                        (85) 99999-0000
+                      <?php echo $show->fone_contatos;?>
                       </td>
                       <td>
-                        ltitreinamento@gmail.com
+                      <?php echo $show->email_contatos;?>
                       </td>
                       <td>
                       <div class="btn-group">
@@ -98,23 +174,18 @@
                       </div>
                       </td>
                     </tr>
-                    <tr>
-                      <td>2.</td>
-                      <td>Paulo Victor</td>
-                      <td>
-                        (85) 00000-0000
-                      </td>
-                      <td>
-                        pv@gmail.com
-                      </td>
-                      <td>
-                      <div class="btn-group">
-                        <a href="#" class="btn btn-success" title="Editar Contato"><i class="fas fa-user-edit"></i></button>
-                        <a href="#" class="btn btn-danger" title="Remover Contato"><i class="fas fa-user-times"></i></a>
-                      </div>
-                      </td>
-                    </tr>
-                    
+                    <?php
+
+                            }
+
+                          }else{
+
+                          }
+                        }catch (PDOException $e){
+                            echo '<strong>ERRO DE PDO= </strong>'.$e->getMessage();
+                        }
+                    ?>
+                                       
                   </tbody>
                 </table>
               </div>
