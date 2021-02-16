@@ -30,7 +30,6 @@
                   <div class="form-group">
                     <label for="exampleInputEmail1">Nome</label>
                     <input type="text" class="form-control" name="nome" id="nome" required placeholder="Digite o nome de contato">
-                    
                   </div>
                   <div class="form-group">
                     <label for="exampleInputPassword1">Telefone</label>
@@ -169,8 +168,8 @@
                       </td>
                       <td>
                       <div class="btn-group">
-                        <a href="home.php?acao=editar" class="btn btn-success" title="Editar Contato"><i class="fas fa-user-edit"></i></button>
-                        <a href="#" class="btn btn-danger" title="Remover Contato"><i class="fas fa-user-times"></i></a>
+                        <a href="home.php?acao=editar&id=<?php echo $show->id_contatos;?>" class="btn btn-success" title="Editar Contato"><i class="fas fa-user-edit"></i></button>
+                        <a href="conteudo/del-contato.php?idDel=<?php echo $show->id_contatos;?>" onclick="return confirm('Deseja remover o contato')" class="btn btn-danger" title="Remover Contato"><i class="fas fa-user-times"></i></a>
                       </div>
                       </td>
                     </tr>
