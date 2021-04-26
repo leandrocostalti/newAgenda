@@ -5,7 +5,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Editar Contato</h1>
+            <h1>Editar Perfil</h1>
           </div>
           
         </div>
@@ -17,13 +17,10 @@
       <div class="container-fluid">
       <?php
         include('../config/conexao.php');
-        if(!isset($_GET['id'])){
-            header("Location: home.php");
-            exit;
-        }
-        $id = filter_input(INPUT_GET,'id',FILTER_DEFAULT);
+        
+         /*$id = filter_input(INPUT_GET,'id',FILTER_DEFAULT);
 
-        $select = "SELECT * FROM tb_contatos WHERE id_contatos=:id";
+       $select = "SELECT * FROM tb_contatos WHERE id_contatos=:id";
         try{
             $resultado = $conect->prepare($select);
             $resultado->bindParam(':id',$id, PDO::PARAM_INT);
@@ -43,7 +40,7 @@
             }
         }catch(PDOException $e){
             echo "<strong>ERRO DE SELECT NO PDO: </strong>".$e->getMessage();
-        }
+        }*/
       ?>
         <div class="row">
           <!-- left column -->
@@ -51,7 +48,7 @@
             <!-- general form elements -->
             <div class="card card-primary">
               <div class="card-header">
-                <h3 class="card-title">editar contato</h3>
+                <h3 class="card-title">Editar Perfil</h3>
               </div>
               <!-- /.card-header -->
               <!-- form start -->
@@ -59,19 +56,19 @@
                 <div class="card-body">
                   <div class="form-group">
                     <label for="exampleInputEmail1">Nome</label>
-                    <input type="text" class="form-control" name="nome" id="nome" required value="<?php echo $nome; ?>">
-                  </div>
-                  <div class="form-group">
-                    <label for="exampleInputPassword1">Telefone</label>
-                    <input type="text" class="form-control" name="telefone" id="telefone" required value="<?php echo $fone; ?>">
-                  </div>
-                  <div class="form-group">
-                    <label for="exampleInputEmail1">Endereço de E-mail</label>
-                    <input type="email" class="form-control" name="email" id="email" required value="<?php echo $email; ?>">
+                    <input type="text" class="form-control" name="nome" id="nome" required value="<?php echo $nome_user; ?>">
                   </div>
                   
                   <div class="form-group">
-                    <label for="exampleInputFile">Foto do contato</label>
+                    <label for="exampleInputEmail1">Endereço de E-mail</label>
+                    <input type="email" class="form-control" name="email" id="email" required value="<?php echo $email_user; ?>">
+                  </div>
+                  <div class="form-group">
+                    <label for="exampleInputPassword1">Senha</label>
+                    <input type="password" class="form-control" name="senha" id="telefone" required value="<?php echo base64_decode($senha_user); ?>">
+                  </div>
+                  <div class="form-group">
+                    <label for="exampleInputFile">Avatar do usuário</label>
                     <div class="input-group">
                       <div class="custom-file">
                         <input type="file" class="custom-file-input" name="foto" id="foto">
@@ -84,14 +81,14 @@
                 <!-- /.card-body -->
 
                 <div class="card-footer">
-                  <button type="submit" name="upContato" class="btn btn-primary">Finalizar edição do contato</button>
+                  <button type="submit" name="upPerfil" class="btn btn-primary">Alterar dados do usuário</button>
                 </div>
               </form>
               <?php
-                 if(isset($_POST['upContato'])){
+                 if(isset($_POST['upPerfil'])){
                 $nome = $_POST['nome'];
-                $fone = $_POST['telefone'];
                 $email = $_POST['email'];
+                $senha = base64_encode($_POST['senha']);
                 //Verificar se existe imagem para fazer o upload
                 if(!empty($_FILES['foto']['name'])) {
                   $formatP = array("png", "jpg", "jpeg", "gif");
@@ -111,17 +108,17 @@
                     echo "Formato inválido";
                   }
                 }else{
-                  $novoNome = $foto;
+                  $novoNome = $foto_user;
                 }
 
-                $update = "UPDATE tb_contatos SET nome_contatos=:nome,fone_contatos=:fone,email_contatos=:email,foto_contatos=:foto WHERE id_contatos=:id";
+                $update = "UPDATE tb_user SET foto_user=:foto,nome_user=:nome,email_user=:email,senha_user=:senha WHERE id_user=:id";
                 try{
                   $result = $conect->prepare($update);
-                  $result->bindParam(':id',$id,PDO::PARAM_STR);
-                  $result->bindParam(':nome',$nome,PDO::PARAM_STR);
-                  $result->bindParam(':fone',$fone,PDO::PARAM_STR);
-                  $result->bindParam(':email',$email,PDO::PARAM_STR);
+                  $result->bindParam(':id',$id_user,PDO::PARAM_STR);
                   $result->bindParam(':foto',$novoNome,PDO::PARAM_STR);
+                  $result->bindParam(':nome',$nome,PDO::PARAM_STR);
+                  $result->bindParam(':email',$email,PDO::PARAM_STR);
+                  $result->bindParam(':senha',$senha,PDO::PARAM_STR);
                   $result->execute();
                   // alerte abaixo
                   $contar = $result->rowCount();
@@ -130,27 +127,22 @@
                                 <div class="alert alert-success alert-dismissible">
                                   <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                                   <h5><i class="icon fas fa-check"></i> Ok !!!</h5>
-                                  Os dados foram atualizados com sucesso.
+                                  Perfil atualizados com sucesso.
                                 </div>
                                 </div>';
-                                header("Refresh: 5, home.php");
+                    header("Refresh: 3, ?sair");
+                   
 
                   }else{
                     echo '<div class="alert alert-danger alert-dismissible">
                                   <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                                   <h5><i class="icon fas fa-check"></i> Erro !!!</h5>
-                                  Não foi possível atualizar os dados.
+                                  Perfil não foi atualizar.
                                 </div>';
                   }
                 }catch (PDOException $e){
                   echo "<strong>ERRO DE PDO= </strong>".$e->getMessage();
                 }
-
-                /*echo $nome."<br>";
-                echo $telefone."<br>";
-                echo $email."<br>";
-                var_dump($_FILES['foto']);*/
-
 
               }
               ?>
@@ -160,14 +152,14 @@
             <div class="col-md-6">
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Dados do Contatos</h3>
+                <h3 class="card-title">Dados do Usuário</h3>
               </div>
               <!-- /.card-header -->
               <div class="card-body p-0" style="text-align: center; margin-bottom: 98px">
-                <img src="../img/<?php echo $foto; ?>" alt="<?php echo $foto; ?>" title="<?php echo $foto; ?>" style="width: 200px; border-radius: 100%; margin-top: 30px">
-                <h1><?php echo $nome; ?></h1>
-                <strong><?php echo $fone; ?></strong>
-                <p><?php echo $email; ?></p>
+                <img src="../img/<?php echo $foto_user; ?>" alt="<?php echo $foto; ?>" title="<?php echo $foto; ?>" style="width: 200px; border-radius: 100%; margin-top: 30px">
+                <h1><?php echo $nome_user; ?></h1>
+                <strong><?php echo $email_user; ?></strong>
+                
               </div>
               <!-- /.card-body -->
             </div>

@@ -8,6 +8,8 @@
         include_once('../paginas/conteudo/update_contato.php');
       }elseif ($acao == 'perfil'){
         include_once('../paginas/conteudo/perfil.php');
+      }elseif ($acao == 'relatorio'){
+        include_once('../paginas/conteudo/relatorio.php');
       }
     }else{
       include_once('../paginas/conteudo/cadastro_contato.php');

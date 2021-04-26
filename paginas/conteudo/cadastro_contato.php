@@ -94,7 +94,7 @@
                                     Dados inseridos com sucesso !!!
                                   </div>
                                 </div>';
-
+                                header("Refresh: 5, home.php");
                           }else{
                             echo '<div class="container">
                                       <div class="alert alert-danger alert-dismissible">
@@ -103,6 +103,7 @@
                                       Dados não inseridos !!!
                                     </div>
                                   </div>';
+                                  header("Refresh: 5, home.php");
                           }
                         }catch (PDOException $e){
                           echo "<strong>ERRO DE PDO= </strong>".$e->getMessage();

@@ -1,9 +1,21 @@
+<?php
+  ob_start();
+  session_start();
+  if(!isset($_SESSION['loginUser'])&&(!isset($_SESSION['senhaUser']))){
+    header("Location: ../index.php?acao=negado");
+    exit;
+  }
+  include_once('sair.php');
+?>
 <!DOCTYPE html>
 <html lang="pt_br">
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Agenda Eletrônica</title>
+  <!-- DataTables -->
+  <link rel="stylesheet" href="../plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" href="../plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
   <!-- Tell the browser to be responsive to screen width -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Font Awesome -->
@@ -30,7 +42,36 @@
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
+<?php
 
+  include_once('../config/conexao.php');
+  $usuarioLogado = $_SESSION['loginUser'];
+  $senhaDoUsuario = base64_encode($_SESSION['senhaUser']);
+  $selectUser = "SELECT * FROM tb_user WHERE email_user=:emailUserLogado AND senha_user=:senhaUserLogado";
+
+  try{
+    $resultadoUser = $conect->prepare($selectUser);
+    $resultadoUser->bindParam(':emailUserLogado', $usuarioLogado, PDO::PARAM_STR);
+    $resultadoUser->bindParam(':senhaUserLogado', $senhaDoUsuario, PDO::PARAM_STR);
+    $resultadoUser->execute();
+
+    $contar = $resultadoUser->rowCount();
+    if($contar > 0){
+      while($show = $resultadoUser->FETCH(PDO::FETCH_OBJ)){
+        $id_user = $show->id_user;
+        $foto_user = $show->foto_user;
+        $nome_user = $show->nome_user;
+        $email_user = $show->email_user;
+        $senha_user = $show->senha_user;
+      }
+    }else{
+      echo '<div class="alert alert-danger"> <strong>Aviso!</strong> Não há dados com de perfil :(</div>';
+    }
+  }catch (PDOException $e){
+      echo "ERRO DE LOGIN DO PDO : ".$e->getMessage();
+  }
+
+?>
   <!-- Navbar -->
   <nav class="main-header navbar navbar-expand navbar-white navbar-light">
     <!-- Left navbar links -->
@@ -55,12 +96,12 @@
         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
           
           <div class="dropdown-divider"></div>
-          <a href="#" class="dropdown-item">
+          <a href="home.php?acao=perfil" class="dropdown-item">
           <i class="fas fa-user-alt mr-2"></i></i> Alterar Perfil
             
           </a>
           <div class="dropdown-divider"></div>
-          <a href="#" class="dropdown-item">
+          <a href="?sair" class="dropdown-item">
           <i class="fas fa-sign-out-alt mr-2"></i> Sair da Agenda
             
           </a>
@@ -87,10 +128,10 @@
       <!-- Sidebar user panel (optional) -->
       <div class="user-panel mt-3 pb-3 mb-3 d-flex">
         <div class="image">
-          <img src="../dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
+          <img src="../img/<?php echo $foto_user; ?>" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-          <a href="#" class="d-block">Alexander Pierce</a>
+          <a href="#" class="d-block"><?php echo $nome_user; ?></a>
         </div>
       </div>
 
@@ -109,7 +150,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="home.php?acao=editar" class="nav-link">
+            <a href="home.php?acao=relatorio" class="nav-link">
               <i class="nav-icon fas fa-chart-pie"></i>
               <p>
                 Relatório
