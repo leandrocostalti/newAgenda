@@ -11,8 +11,8 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>New Agenda 2.0 | Log in</title>
-  <!-- Tell the browser to be responsive to screen width -->
+  <title>Administrativo 1.0 | Log in</title>
+  
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <!-- Font Awesome -->
@@ -29,16 +29,16 @@
 <body class="hold-transition login-page">
 <div class="login-box">
   <div class="login-logo">
-    <a href="../../index2.html"><b>New Agenda</b> 2.0</a>
+    <a href="../../index2.html"><b>Administrativo</b> 1.0</a>
   </div>
   <!-- /.login-logo -->
   <div class="card">
     <div class="card-body login-card-body">
-      <p class="login-box-msg">Para acessar entre com E-mail e Senha</p>
+      <p class="login-box-msg">Para acessar entre com Usuário e Senha</p>
 
-      <form action="" method="post">
+      <form action="paginas/home.php?acao=bemvindo" method="post">
         <div class="input-group mb-3">
-          <input type="email" name="email" class="form-control" placeholder="Digite seu E-mail...">
+          <input type="email" name="email" class="form-control" placeholder="Digite seu Usuário...">
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-envelope"></span>
@@ -59,12 +59,18 @@
           </div>
           <!-- /.col -->
           <div class="col-12" style="margin-bottom: 5px">
-            <button type="submit" name="login" class="btn btn-primary btn-block">Acessar a Agenda</button>
+            <button type="submit" name="login" class="btn btn-primary btn-block">Login</button>
           </div>
           <!-- /.col -->
         </div>
       </form>
       <?php
+
+
+         /* 
+
+
+
           include_once('config/conexao.php');
           //Método de acesso a ação negada
           if(isset($_GET['acao'])){
@@ -103,6 +109,8 @@
                 <strong>Logado com sucesso!</strong> Você será redirecionado para a agenda :)</div>';
 
                 header("Refresh: 5, paginas/home.php?acao=bemvindo");
+
+
               }else{
                 echo '<div class="alert alert-danger">
                 <button type="button" class="close" data-dismiss="alert">×</button>
@@ -116,6 +124,8 @@
             }
 
           }
+
+          */
       ?>
      
       <!-- /.social-auth-links -->
